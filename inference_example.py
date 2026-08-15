@@ -19,10 +19,10 @@ from peft import PeftModel
 
 BASE_MODEL = "Qwen/Qwen2.5-0.5B"
 
-# Path or Hugging Face Hub repo ID where the LoRA adapter was saved.
-# e.g. "./lora-financial-topic-classifier" (local) or
-#      "your-hf-username/financial-topic-classifier-lora" (Hub)
-ADAPTER_PATH = "./lora-financial-topic-classifier"
+# Hugging Face Hub repo ID where the LoRA adapter is hosted.
+# (Alternatively, this could be a local folder path, e.g.
+# "./lora-financial-topic-classifier", if you saved the adapter locally instead.)
+ADAPTER_PATH = "ZainabHM278/financial-topic-classifier-lora"
 
 LABEL_NAMES = [
     "Analyst Update",

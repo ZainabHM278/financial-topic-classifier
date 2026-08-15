@@ -39,6 +39,8 @@ This imbalance directly informed the choice to track **macro F1** (unweighted av
 
 **Base model:** [`Qwen/Qwen2.5-0.5B`](https://huggingface.co/Qwen/Qwen2.5-0.5B) — a ~494M parameter, dense, decoder-only transformer (Apache 2.0 licensed). The *base* (non-instruction-tuned) variant was used deliberately, since the task uses a sequence-classification head rather than conversational prompting.
 
+**Trained adapter:** [ZainabHM278/financial-topic-classifier-lora](https://huggingface.co/ZainabHM278/financial-topic-classifier-lora) — the fine-tuned LoRA weights, hosted on the Hugging Face Hub.
+
 **Fine-tuning technique: LoRA** (via `peft`)
 
 Instead of updating all ~494M parameters, LoRA freezes the base model's pretrained weights and injects small trainable low-rank matrices (`A`, `B`) alongside targeted layers. The effective weight becomes `W_frozen + (B × A)`, and only `A`/`B` are trained.
@@ -151,12 +153,21 @@ predict_topic("MAIA Biotech files for a $15 million IPO on Nasdaq")
 
 ## How to Run
 
+**To retrain from scratch** (see `notebook.ipynb` for the full walkthrough):
 1. Load the dataset: `datasets.load_dataset("zeroshot/twitter-financial-news-topic")`
 2. Tokenize with `Qwen/Qwen2.5-0.5B`'s tokenizer, `max_length=96`
 3. Load `Qwen/Qwen2.5-0.5B` via `AutoModelForSequenceClassification` (`num_labels=20`)
 4. Apply LoRA via `peft.LoraConfig` / `get_peft_model` (see configuration table above)
 5. Train with Hugging Face `Trainer` using the hyperparameters above
 6. Evaluate on the held-out test set
-7. Use `predict_topic(text)` for inference on new text
+
+**To run inference with the already-trained model** (no retraining needed):
+
+```bash
+pip install -r requirements.txt
+python inference_example.py
+```
+
+This loads `Qwen/Qwen2.5-0.5B` as the base model and attaches the fine-tuned LoRA adapter directly from the Hugging Face Hub ([ZainabHM278/financial-topic-classifier-lora](https://huggingface.co/ZainabHM278/financial-topic-classifier-lora)) — no local model files required.
 
 **Environment:** Kaggle Notebooks, GPU T4 x2, Python, `transformers`, `datasets`, `peft`, `scikit-learn`.
